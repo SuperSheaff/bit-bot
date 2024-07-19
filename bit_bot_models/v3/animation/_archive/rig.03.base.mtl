@@ -1,0 +1,12 @@
+# Blender 4.0.2 MTL File: 'rig.03.base.blend'
+# www.blender.org
+
+newmtl m_f7a7b627-d2a1-a86d-8b43-64fb07b95c32.001
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.000000 0.000000 0.000000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 1
+map_Kd C:/texturev3.png
