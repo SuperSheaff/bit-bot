@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2269414a5628b9147902fd2e6f8c3dbc, type: 3}
+  m_Name: GameSettings
+  m_EditorClassIdentifier: 
+  moveSpeed: 10
+  rotationSpeed: 10
+  jumpHeight: 5
+  jumpDuration: 0.5
+  jumpMoveSpeed: 10
+  jumpHoldTime: 0.3
+  jumpHoldGravity: -40
+  jumpBufferTime: 0.2
+  coyoteTime: 0.2
+  extraFallGravity: -50
+  airControlInfluence: 0.5
+  gravity: -40
+  jumpForce: 20
+  debugMode: 0
+  skipIntro: 0
