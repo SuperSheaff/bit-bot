@@ -1,0 +1,43 @@
+using UnityEngine;
+
+// State representing the player being idle
+public class PauseState : PlayerState
+{
+    private Quaternion targetRotation;
+    private float rotationSpeed = 1.0f; // Adjust this to control the rotation speed
+    private Transform headTransform;
+
+    // Constructor for the PauseState
+    public PauseState(PlayerController player) : base(player) 
+    {
+        headTransform = player.headTransform; // Cache the head transform
+    }
+
+    // Called when the state is entered
+    public override void Enter()
+    {
+        base.Enter();
+        player.animator.SetBool("isIdle", true);
+
+        // Calculate the target rotation to face the camera
+        Vector3 directionToCamera = player.cameraTransform.position - player.transform.position;
+        directionToCamera.y = 0; // Keep only the horizontal direction
+        targetRotation = Quaternion.LookRotation(directionToCamera);
+    }
+
+    // Called every frame to update the state
+    public override void Update()
+    {
+        base.Update();
+
+        // Smoothly rotate the player to face the camera
+        player.transform.rotation = Quaternion.Slerp(player.transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+    }
+
+    // Called when the state is exited
+    public override void Exit()
+    {
+        base.Exit();
+        player.animator.SetBool("isIdle", false);
+    }
+}

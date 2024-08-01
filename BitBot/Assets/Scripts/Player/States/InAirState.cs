@@ -3,6 +3,10 @@ using UnityEngine;
 // State representing the player being in the air (jumping or falling)
 public class InAirState : ControlState
 {
+
+    private Vector3 ledgePosition;
+    private Vector3 ledgeNormal;
+
     // Constructor for the InAirState
     public InAirState(PlayerController player) : base(player) {}
 
@@ -28,6 +32,14 @@ public class InAirState : ControlState
         {
             player.stateMachine.ChangeState(player.idleState);
         }
+        else if (player.velocity.y < 0)
+        {
+            if (player.HandleLedgeGrab() && player.LedgeGrabEnabled)
+            {
+                player.stateMachine.ChangeState(player.ledgeGrabState);
+            }
+        }
+
     }
 
     // Called every fixed frame to update the state

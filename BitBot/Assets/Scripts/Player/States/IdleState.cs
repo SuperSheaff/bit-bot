@@ -23,6 +23,12 @@ public class IdleState : GroundedState
         {
             player.stateMachine.ChangeState(player.runningState);
         }
+        // Transition to crouch state if there is crouch input
+        if (player.inputHandler.Crouch && player.SneakEnabled)
+        {
+            player.stateMachine.ChangeState(player.crouchIdleState);
+        }
+        
     }
 
     // Called when the state is exited

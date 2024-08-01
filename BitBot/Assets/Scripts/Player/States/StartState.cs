@@ -22,7 +22,7 @@ public class StartState : PlayerState
         {
             player.stateMachine.ChangeState(player.standState);
             GameController.instance.stateMachine.ChangeState(GameController.instance.gameIntroState);
-            GameTimer.instance.StartTimer();
+            // GameTimer.instance.StartTimer();
         }
     }
 

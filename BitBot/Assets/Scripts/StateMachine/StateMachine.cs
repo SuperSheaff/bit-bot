@@ -48,4 +48,10 @@ public class StateMachine<T>
     {
         CurrentState.FixedUpdate();
     }
+
+    // Late update for the current state
+    public void LateUpdate()
+    {
+        CurrentState.LateUpdate();
+    }
 }

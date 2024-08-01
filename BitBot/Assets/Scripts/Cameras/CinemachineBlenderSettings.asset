@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CustomBlends:
   - From: '**ANY CAMERA**'
-    To: Camera - Area Intro 1
+    To: Camera Intro 1
     Blend:
       Style: 0
       Time: 0
@@ -23,9 +23,9 @@ MonoBehaviour:
         m_Curve: []
         m_PreInfinity: 0
         m_PostInfinity: 0
-        m_RotationOrder: 0
-  - From: Camera - Area Intro 1
-    To: Camera - Area Intro 2
+        m_RotationOrder: 4
+  - From: Camera Intro 1
+    To: Camera Intro 2
     Blend:
       Style: 1
       Time: 5
@@ -35,8 +35,8 @@ MonoBehaviour:
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 4
-  - From: Camera - Area Intro 2
-    To: Camera - Area 0
+  - From: Camera Intro 2
+    To: Camera 0.1
     Blend:
       Style: 1
       Time: 8

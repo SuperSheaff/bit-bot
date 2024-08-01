@@ -15,6 +15,10 @@ public abstract class State<T>
     // Called every frame to update the state
     public virtual void Update() {}
 
+    public virtual void LateUpdate() {
+
+    }
+
     // Called every fixed frame to update the state
     public virtual void FixedUpdate() {}
 

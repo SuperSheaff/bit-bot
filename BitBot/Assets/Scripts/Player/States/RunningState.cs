@@ -10,6 +10,7 @@ public class RunningState : GroundedState
     public override void Enter()
     {
         base.Enter();
+        player.animator.SetBool("isIdle", false);
         player.animator.SetBool("isRunning", true);
     }
 
@@ -23,6 +24,17 @@ public class RunningState : GroundedState
         {
             player.stateMachine.ChangeState(player.idleState);
         }
+        // Transition to crouch move state if there is crouch input
+        if (player.inputHandler.Crouch  && player.SneakEnabled)
+        {
+            player.stateMachine.ChangeState(player.crouchMovingState);
+        }
+
+        // // Transition to push state if there is push input and pushable object
+        // if (player.inputHandler.Push && player.GetPushableObject() != null)
+        // {
+        //     player.stateMachine.ChangeState(player.pushingState);
+        // }
     }
 
     // Called every fixed frame to update the state

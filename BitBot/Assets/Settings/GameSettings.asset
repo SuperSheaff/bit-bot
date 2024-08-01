@@ -23,7 +23,10 @@ MonoBehaviour:
   coyoteTime: 0.2
   extraFallGravity: -50
   airControlInfluence: 0.5
+  crouchMoveSpeed: 2
+  pushingMoveSpeed: 2
   gravity: -40
   jumpForce: 20
+  pushDistanceCheck: 2
   debugMode: 0
   skipIntro: 0

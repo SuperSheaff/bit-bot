@@ -51,12 +51,31 @@ public class GameSettings : ScriptableObject
 
     #endregion
 
-    #region Computed Properties
+    #region Crouch Settings
 
+    [Header("Crouch Settings")]
+    [Tooltip("Crouching speed of the player.")]
+    public float crouchMoveSpeed = 2f;
+
+    #endregion
+
+    #region Push Settings
+
+    [Header("Push Settings")]
+    [Tooltip("Pushing speed of the player.")]
+    public float pushingMoveSpeed = 2f;
+
+    #endregion
+
+    #region Air Control Settings
+
+    [Header("Air Control Settings")]
     [HideInInspector] public float gravity; // Calculated gravity based on jump settings
     [HideInInspector] public float jumpForce; // Calculated jump force based on jump settings
 
     #endregion
+
+    public float pushDistanceCheck = 2f;
 
     #region Debug Settings
 

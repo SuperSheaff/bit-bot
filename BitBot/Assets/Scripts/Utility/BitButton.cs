@@ -1,54 +1,139 @@
 using UnityEngine;
+using System.Collections;
 
-// Script to handle button functionality, including optional light and sound effects, and linking to doors
 public class BitButton : MonoBehaviour
 {
-    public Light indicatorLight; // Optional light to turn on when the button is pressed
+    public enum ButtonType
+    {
+        Permanent,
+        Temporary
+    }
+
+    public ButtonType buttonType;
+    public BitLight indicatorLight; // Custom light to turn on when the button is pressed
+    public Color buttonPressColor = Color.green; // Color to change the light to when the button is pressed
     public string soundName; // Optional sound to play when the button is pressed
     public LayerMask playerLayer; // Layer to detect the player
     public BitDoor[] linkedDoors; // Doors that this button is linked to
+    public Transform buttonTransform; // Transform of the button for visual pressing effect
+    public Vector3 pressOffset; // Offset for the button press visual effect
+    public float pressSpeed = 5f; // Speed of the button press animation
 
     private bool isPressed = false;
+    private Vector3 initialPosition;
+    private int objectsOnButton = 0; // Counter for objects on the button
 
     public bool IsPressed { get { return isPressed; } }
 
-    // Triggered when another collider enters the trigger collider attached to this object
+    private void Start()
+    {
+        initialPosition = buttonTransform.localPosition;
+    }
+
     private void OnTriggerEnter(Collider other)
     {
-        if (IsPlayer(other) && !isPressed)
+        if (IsPlayer(other))
         {
-            isPressed = true;
-            ActivateButton();
+            objectsOnButton++;
+            if (objectsOnButton == 1) // Only activate if this is the first object on the button
+            {
+                ActivateButton();
+            }
+            PressButton();
         }
     }
 
-    // Check if the collider belongs to a player
+    private void OnTriggerExit(Collider other)
+    {
+        if (IsPlayer(other))
+        {
+            objectsOnButton--;
+            if (objectsOnButton == 0)
+            {
+                ReleaseButton();
+                if (buttonType == ButtonType.Temporary)
+                {
+                    DeactivateButton();
+                }
+            }
+        }
+    }
+
     private bool IsPlayer(Collider other)
     {
         return ((1 << other.gameObject.layer) & playerLayer) != 0;
     }
 
-    // Activate the button by turning on the light, playing the sound, and notifying linked doors
+    private void PressButton()
+    {
+        StopAllCoroutines();
+        StartCoroutine(MoveButton(initialPosition + pressOffset));
+    }
+
+    private void ReleaseButton()
+    {
+        StopAllCoroutines();
+        StartCoroutine(MoveButton(initialPosition));
+    }
+
     private void ActivateButton()
     {
-        // Turn on the light if there is one
+        isPressed = true;
+
         if (indicatorLight != null)
         {
-            indicatorLight.enabled = true;
+            indicatorLight.SetColor(buttonPressColor);
+            indicatorLight.TurnOn();
         }
 
-        // Play the sound if there is one
-        if (!string.IsNullOrEmpty(soundName))
+        bool doorStateChanged = false;
+        foreach (BitDoor door in linkedDoors)
+        {
+            if (buttonType == ButtonType.Temporary || !door.IsOpen)
+            {
+                door.OnButtonPressed();
+                doorStateChanged = true;
+            }
+        }
+
+        if (doorStateChanged && !string.IsNullOrEmpty(soundName))
         {
             SoundManager.instance.PlaySound(soundName, transform);
         }
+    }
 
-        // Notify linked doors
-        foreach (BitDoor door in linkedDoors)
+    private void DeactivateButton()
+    {
+        isPressed = false;
+
+        if (indicatorLight != null)
         {
-            door.OnButtonPressed();
+            indicatorLight.TurnOff();
         }
 
-        SoundManager.instance?.PlaySound("Button", this.transform);
+        bool doorStateChanged = false;
+        foreach (BitDoor door in linkedDoors)
+        {
+            if (door.IsOpen)
+            {
+                door.OnButtonReleased();
+                doorStateChanged = true;
+            }
+        }
+
+        if (doorStateChanged && !string.IsNullOrEmpty(soundName))
+        {
+            SoundManager.instance.PlaySound(soundName, transform);
+        }
+    }
+
+    private IEnumerator MoveButton(Vector3 targetPosition)
+    {
+        while (Vector3.Distance(buttonTransform.localPosition, targetPosition) > 0.01f)
+        {
+            buttonTransform.localPosition = Vector3.Lerp(buttonTransform.localPosition, targetPosition, Time.deltaTime * pressSpeed);
+            yield return null;
+        }
+        buttonTransform.localPosition = targetPosition;
     }
 }

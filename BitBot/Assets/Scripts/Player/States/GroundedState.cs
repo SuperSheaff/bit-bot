@@ -21,7 +21,12 @@ public class GroundedState : ControlState
     {
         base.Update();
 
-        if (player.CanJump() && player.JumpEnabled)
+        // if (player.inputHandler.Push && player.GetPushableObject() != null)
+        if (player.CanPush())
+        {
+            player.stateMachine.ChangeState(player.pushingState);
+        }
+        else if (player.CanJump() && player.JumpEnabled)
         {
             player.ResetJumpBuffer();
             player.stateMachine.ChangeState(player.jumpingState);

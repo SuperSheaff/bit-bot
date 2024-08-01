@@ -9,10 +9,17 @@ public class PlayerController : MonoBehaviour
     public StartState startState;
     public StandState standState;
     public IdleState idleState;
+    public PauseState pauseState;
     public RunningState runningState;
     public JumpingState jumpingState;
     public InAirState inAirState;
     public EndState endState;
+    public CrouchIdleState crouchIdleState;
+    public CrouchMovingState crouchMovingState;
+    public PushingState pushingState;
+    public LedgeGrabState ledgeGrabState;
+    public DeathState deathState;
+    public RespawnState respawnState;
 
     #endregion
 
@@ -23,17 +30,30 @@ public class PlayerController : MonoBehaviour
     public GameSettings settings;
     public PlayerInputHandler inputHandler;
     public Transform cameraTransform;
-    
+    public Transform headTransform;
+    public Material meshMaterial; // Assign this in the inspector
+    public Renderer playerRenderer; // Assign this in the inspector
+
+
     #endregion
 
     #region Movement Variables
 
-    public bool JumpEnabled = false;
+    public bool JumpEnabled         = false;
+    public bool SneakEnabled        = false;
+    public bool PushEnabled         = false;
+    public bool LedgeGrabEnabled    = false;
+
+    private int currentSneakSoundIndex = 0;
+
     public Vector3 velocity;
     private SphereCollider groundCheckCollider; // Collider for ground check
     public float groundCheckRadius = 10f; // Radius of the sphere used to check for the ground
     public LayerMask groundLayer; // Layer mask to define what is considered ground
 
+    public Vector3 ledgePosition;
+    public Vector3 ledgeDetectedPosition;
+    private bool isLedgeDetected;
     private Vector3 respawnPosition;
     private bool isGrounded;
     private float jumpBufferCounter;
@@ -41,6 +61,21 @@ public class PlayerController : MonoBehaviour
     private float jumpTimeCounter;
     private bool isJumping;
     private int jumpCount;
+    private bool isCrouching;
+    private Vector3 originalCenter;
+    private float originalHeight;
+    private float crouchHeight = 1f;
+    private float headCheckDistance = 0.5f;
+    public float pushCooldown = 0.5f; // Cooldown time in seconds
+    public float lastPushTime; // Time of the last push state exit
+    private float pushCheckRadius = 1f;
+    public LayerMask pushableLayer;
+    public PushHandle currentPushHandle;
+    public Vector3 ledgeOffset = new Vector3(0f, -1f, 0.5f); // Adjustable offset for the ledge grab position
+
+    public bool IsSneaking = false;
+
+    public GameObject pushableObject;
 
     #endregion
 
@@ -60,6 +95,12 @@ public class PlayerController : MonoBehaviour
         InitializeSound();
         InitializeChecks();
 
+        // Assuming the player has a MeshRenderer component
+        if (playerRenderer != null)
+        {
+            meshMaterial = playerRenderer.material;
+        }
+
         if (settings.debugMode)
         {
             Debug.Log("PlayerController initialized.");
@@ -78,10 +119,54 @@ public class PlayerController : MonoBehaviour
         stateMachine.FixedUpdate();
     }
 
+    void LateUpdate()
+    {
+        stateMachine.LateUpdate();
+    }
+
     void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, groundCheckRadius);
+
+        // Draw ground check sphere
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position + Vector3.down * 0.5f, 0.1f);
+
+        // Draw ledge check ray
+        Gizmos.color = Color.blue;
+        Vector3 origin = transform.position + Vector3.up * 2.0f;
+        Vector3 direction = transform.forward * 1.5f;
+        Gizmos.DrawRay(origin, direction);
+
+        if (isLedgeDetected)
+        {
+            // Draw detected ledge position
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(ledgeDetectedPosition, 0.1f);
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        PushHandle handle = other.GetComponent<PushHandle>();
+        if (handle != null && handle.pushableObject != null)
+        {
+            currentPushHandle = handle;
+        }
+        if (other.CompareTag("Deadly"))
+        {
+            stateMachine.ChangeState(deathState);
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        PushHandle handle = other.GetComponent<PushHandle>();
+        if (handle != null && handle.pushableObject != null)
+        {
+            currentPushHandle = null;
+        }
     }
 
     #endregion
@@ -91,15 +176,22 @@ public class PlayerController : MonoBehaviour
     private void InitializeStateMachine()
     {
         CalculateJumpParameters();
-        stateMachine    = new StateMachine<PlayerController>(settings.debugMode);
+        stateMachine        = new StateMachine<PlayerController>(settings.debugMode);
 
-        startState      = new StartState(this);
-        standState      = new StandState(this);
-        idleState       = new IdleState(this);
-        runningState    = new RunningState(this);
-        jumpingState    = new JumpingState(this);
-        inAirState      = new InAirState(this);
-        endState        = new EndState(this);
+        startState          = new StartState(this);
+        standState          = new StandState(this);
+        idleState           = new IdleState(this);
+        pauseState          = new PauseState(this);
+        runningState        = new RunningState(this);
+        jumpingState        = new JumpingState(this);
+        inAirState          = new InAirState(this);
+        endState            = new EndState(this);
+        crouchIdleState     = new CrouchIdleState(this);
+        crouchMovingState   = new CrouchMovingState(this);
+        pushingState        = new PushingState(this);
+        ledgeGrabState      = new LedgeGrabState(this);
+        deathState          = new DeathState(this);
+        respawnState        = new RespawnState(this);
 
         if(settings.skipIntro)
         {
@@ -128,6 +220,9 @@ public class PlayerController : MonoBehaviour
         groundCheckCollider.isTrigger = true;
         groundCheckCollider.radius = groundCheckRadius;
         groundCheckCollider.center = new Vector3(0, 0, 0);
+
+        originalCenter = controller.center;
+        originalHeight = controller.height;
     }
 
     // Calculates the jump parameters based on settings
@@ -276,6 +371,202 @@ public class PlayerController : MonoBehaviour
         JumpEnabled = true;
     }
 
+    // Enables sneak functionality
+    public void EnableSneak()
+    {
+        SneakEnabled = true;
+    }
+
+    // Enables push functionality
+    public void EnablePush()
+    {
+        PushEnabled = true;
+    }
+
+    // Enables LedgeGrab functionality
+    public void EnableLedgeGrab()
+    {
+        LedgeGrabEnabled = true;
+    }
+
+    #endregion
+
+    #region Crouch Functions
+
+    public void SetCrouchCollider(bool isCrouching)
+    {
+        if (isCrouching)
+        {
+            controller.height = crouchHeight;
+            controller.center = new Vector3(controller.center.x, crouchHeight / 2, controller.center.z);
+        }
+        else
+        {
+            controller.height = originalHeight;
+            controller.center = originalCenter;
+        }
+    }
+
+    public bool IsBlockedAbove()
+    {
+        RaycastHit hit;
+        Vector3 start = transform.position + Vector3.up * controller.height;
+        return Physics.SphereCast(start, controller.radius, Vector3.up, out hit, headCheckDistance, groundLayer);
+    }
+
+    #endregion
+
+    #region Push Functions
+
+    // Checks if the player can push
+    public bool CanPush()
+    {
+        return inputHandler.Push && currentPushHandle != null && Time.time - lastPushTime > pushCooldown && PushEnabled;
+    }
+
+    // Sets the pushable object
+    public void SetPushableObject(GameObject obj)
+    {
+        pushableObject = obj;
+    }
+
+    // Gets the pushable object
+    public GameObject GetPushableObject()
+    {
+        return pushableObject;
+    }
+
+    public void SetPushHandle(PushHandle handle)
+    {
+        currentPushHandle = handle;
+    }
+
+    public void SetLastPushTime()
+    {
+        lastPushTime = Time.time; // Update the last push time
+    }
+
+    // Checks if there is a pushable object nearby
+    // private bool IsNearPushableObject()
+    // {
+    //     Collider[] colliders = Physics.OverlapSphere(transform.position, pushCheckRadius, pushableLayer);
+    //     if (colliders.Length > 0)
+    //     {
+    //         SetPushableObject(colliders[0].gameObject);
+    //         return true;
+    //     }
+    //     else
+    //     {
+    //         SetPushableObject(null);
+    //         return false;
+    //     }
+    // }
+
+    #endregion
+
+    #region Ledge Grab Functions
+
+    // public bool IsLedgeDetected(out Vector3 ledgePosition, out Vector3 ledgeNormal)
+    // {
+    //     float ledgeCheckDistance = 1.5f;
+    //     float ledgeHeight = 2.0f;
+    //     float ledgeDepth = 0.3f;
+
+    //     Vector3 origin = transform.position + Vector3.up * ledgeHeight;
+    //     Vector3 direction = transform.forward;
+
+    //     RaycastHit hit;
+    //     if (Physics.Raycast(origin, direction, out hit, ledgeCheckDistance))
+    //     {
+    //         Vector3 ledgeOrigin = hit.point + Vector3.up * ledgeDepth;
+    //         if (Physics.Raycast(ledgeOrigin, -Vector3.up, out hit, ledgeDepth))
+    //         {
+    //             if (IsValidLedgePoint(hit.point, out ledgePosition))
+    //             {
+    //                 ledgeNormal = hit.normal;
+    //                 return true;
+    //             }
+    //         }
+    //     }
+
+    //     ledgePosition = Vector3.zero;
+    //     ledgeNormal = Vector3.zero;
+    //     return false;
+    // }
+
+    // private bool IsValidLedgePoint(Vector3 point, out Vector3 validLedgePosition)
+    // {
+    //     float minDistanceFromSideVertices = 0.25f;
+
+    //     if (Vector3.Distance(point, transform.position) > minDistanceFromSideVertices)
+    //     {
+    //         validLedgePosition = point;
+    //         return true;
+    //     }
+
+    //     validLedgePosition = Vector3.zero;
+    //     return false;
+    // }
+
+    // public void SetLedgePosition(Vector3 ledgePosition, Vector3 ledgeNormal)
+    // {
+    //     if (ledgePosition != Vector3.zero)
+    //     {
+    //         Vector3 adjustedLedgePosition = ledgePosition + ledgeOffset;
+    //         transform.position = adjustedLedgePosition;
+    //         // Ensure the player is facing directly into the wall (only adjusting y-rotation)
+    //         // Vector3 forward = new Vector3(-ledgeNormal.x, 0, -ledgeNormal.z).normalized;
+    //         // Quaternion targetRotation = Quaternion.LookRotation(forward, Vector3.up);
+    //         // transform.rotation = targetRotation;
+    //     }
+    // }
+
+    public bool HandleLedgeGrab()
+    {
+        RaycastHit downHit;
+        Vector3 lineDownStart = (transform.position + Vector3.up * 1.5f) + transform.forward;
+        Vector3 lineDownEnd  = (transform.position + Vector3.up * 0.7f) + transform.forward;
+        Physics.Linecast(lineDownStart, lineDownEnd, out downHit, groundLayer);
+        Debug.DrawLine(lineDownStart, lineDownEnd);
+
+        if (LedgeGrabEnabled)
+        {
+            if (downHit.collider != null)
+            {
+                RaycastHit forwardHit;
+                Vector3 lineForwardStart = new Vector3(transform.position.x, downHit.point.y - 0.1f, transform.position.z);
+                Vector3 lineForwardEnd  = new Vector3(transform.position.x, downHit.point.y - 0.1f, transform.position.z) + transform.forward;
+                Physics.Linecast(lineForwardStart, lineForwardEnd, out forwardHit, groundLayer);
+                Debug.DrawLine(lineForwardStart, lineForwardEnd);
+
+                if (forwardHit.collider != null) 
+                {
+                    Vector3 hangPosition = new Vector3(forwardHit.point.x, downHit.point.y, forwardHit.point.z);
+                    Vector3 offset = transform.forward * -0.3f + transform.up * -2.3f;
+                    hangPosition += offset;
+                    transform.position = hangPosition;
+                    transform.forward = -forwardHit.normal;
+
+                    return true;
+                }
+
+                else
+                {
+                    return false;
+                }
+            }
+            else 
+            {
+                return false;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
     #endregion
 
     #region Respawn Functions
@@ -302,6 +593,7 @@ public class PlayerController : MonoBehaviour
     {
         controller.enabled = false; 
         transform.position = respawnPosition; 
+        transform.rotation = Quaternion.Euler(0, -135, 0); // Set rotation to (0, -135, 0)
         yield return null;
         controller.enabled = true;
     }
@@ -327,6 +619,17 @@ public class PlayerController : MonoBehaviour
     public void StepSound()
     {
         SoundManager.instance?.PlaySound("Step", this.transform);
+    }
+
+    public void SneakStepSound()
+    {
+        string[] soundNames = { "SNEAK_01", "SNEAK_02", "SNEAK_03", "SNEAK_04" };
+
+        // Play the current sound
+        SoundManager.instance?.PlaySound(soundNames[currentSneakSoundIndex], this.transform);
+
+        // Update the index to the next sound, looping back to the start if necessary
+        currentSneakSoundIndex = (currentSneakSoundIndex + 1) % soundNames.Length;
     }
 
     #endregion

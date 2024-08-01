@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Water
   - MovingPlatform
+  - Deadly
   layers:
   - Default
   - TransparentFX
@@ -32,8 +33,8 @@ TagManager:
   - Area 15
   - Area 16
   - Ground
-  - 
-  - 
+  - Pushable
+  - CameraTrigger
   - 
   - 
   - 
