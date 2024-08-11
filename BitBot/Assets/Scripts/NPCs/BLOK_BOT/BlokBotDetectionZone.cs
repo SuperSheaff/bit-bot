@@ -28,4 +28,13 @@ public class BlokBotDetectZone : MonoBehaviour
             blokBotController.SetPlayerInDetectionZone(false);
         }
     }
+
+    void OnTriggerStay(Collider other)
+    {
+        // Continuously check if the player is still within the detection zone
+        if (other.CompareTag("Player"))
+        {
+            blokBotController.SetPlayerInDetectionZone(true);
+        }
+    }
 }

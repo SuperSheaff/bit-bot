@@ -13,36 +13,61 @@ public class BitDoor : MonoBehaviour
     private Vector3 doorClosedPosition; // Initial position of the door
     private Vector3 doorOpenPosition; // Final position of the door
     private bool isOpening = false;
-    private int buttonsPressed = 0;
+    private bool[] buttonStates; // Track the state of each button
 
-    public bool IsOpen { get { return buttonsPressed == requiredButtons.Length; } }
+    public bool IsOpen 
+    { 
+        get 
+        { 
+            foreach (bool state in buttonStates)
+            {
+                if (!state) return false;
+            }
+            return true;
+        } 
+    }
 
     void Start()
     {
         doorClosedPosition = transform.position;
         doorOpenPosition = doorClosedPosition + doorOpenOffset;
+        buttonStates = new bool[requiredButtons.Length];
     }
 
     void Update()
     {
-        if (buttonsPressed == requiredButtons.Length && !isOpening)
+        if (IsOpen && !isOpening)
         {
             OpenDoor();
         }
-        else if (buttonsPressed < requiredButtons.Length && isOpening)
+        else if (!IsOpen && isOpening)
         {
             CloseDoor();
         }
     }
 
-    public void OnButtonPressed()
+    public void OnButtonPressed(BitButton button)
     {
-        buttonsPressed++;
+        for (int i = 0; i < requiredButtons.Length; i++)
+        {
+            if (requiredButtons[i] == button)
+            {
+                buttonStates[i] = true;
+                break;
+            }
+        }
     }
 
-    public void OnButtonReleased()
+    public void OnButtonReleased(BitButton button)
     {
-        buttonsPressed--;
+        for (int i = 0; i < requiredButtons.Length; i++)
+        {
+            if (requiredButtons[i] == button)
+            {
+                buttonStates[i] = false;
+                break;
+            }
+        }
     }
 
     private void OpenDoor()

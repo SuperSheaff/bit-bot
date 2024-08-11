@@ -38,6 +38,8 @@ public class CameraController : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        ResetCullingMask();
     }
 
     void Start()

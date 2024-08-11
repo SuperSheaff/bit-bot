@@ -39,6 +39,8 @@ public class PlayerController : MonoBehaviour
 
     #region Movement Variables
 
+    public bool IsAlive             = true;
+
     public bool JumpEnabled         = false;
     public bool SneakEnabled        = false;
     public bool PushEnabled         = false;

@@ -11,4 +11,5 @@ public abstract class PlayerState : State<PlayerController>
 
     // Method to be called from the animator
     public override void OnAnimationEvent(string eventName) {}
+
 }

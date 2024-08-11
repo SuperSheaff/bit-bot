@@ -7,20 +7,20 @@ public class BlokBotController : MonoBehaviour
     public BlokBotAsleepState asleepState;
     public BlokBotReactionState reactionState;
     public BlokBotBlockingState blockingState;
-    public GameObject barrier; // The barrier object to activate/deactivate
+    public GameObject barrier;
     public LayerMask playerLayer;
     public Transform headTransform;
-    public BoxCollider detectionCollider; // The box collider for detection
-    public Transform playerTransform; // Reference to the player's transform
+    public BoxCollider detectionCollider;
+    public Transform playerTransform;
 
     [HideInInspector] public float timeSinceLastSeenPlayer;
     [HideInInspector] public Animator animator;
-    [HideInInspector] public bool isPlayerInDetectionZone = false; // Player detection state
-    public ParticleSystem blockingParticles; // Particle system for blocking state
-    public ParticleSystem sleepingParticles; // Particle system for blocking state
-    public ParticleSystem alertParticles; // Particle system for blocking state
+    [HideInInspector] public bool isPlayerInDetectionZone = false;
+    public ParticleSystem blockingParticles;
+    public ParticleSystem sleepingParticles;
+    public ParticleSystem alertParticles;
     public PlayerController playerController;
-    
+
     void Start()
     {
         stateMachine = new StateMachine<BlokBotController>(false);
@@ -38,7 +38,6 @@ public class BlokBotController : MonoBehaviour
             blockingParticles.Stop();
         }
 
-        // Find the player by tag and store the transform
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
         {
@@ -49,7 +48,16 @@ public class BlokBotController : MonoBehaviour
             Debug.LogError("Player not found in the scene");
         }
 
-        playerController = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>();
+        playerController = player.GetComponent<PlayerController>();
+    }
+
+    void OnEnable()
+    {
+        if (blockingParticles != null)
+        {
+            blockingParticles.Stop();
+        }
+        stateMachine.ChangeState(asleepState);
     }
 
     void Update()
@@ -64,10 +72,23 @@ public class BlokBotController : MonoBehaviour
 
     public void SetPlayerInDetectionZone(bool state)
     {
-        isPlayerInDetectionZone = state;
+        if (playerController != null && playerController.IsAlive)  // Ensure the player is alive before setting detection state
+        {
+            isPlayerInDetectionZone = state;
+        }
+        else
+        {
+            isPlayerInDetectionZone = false;
+        }
     }
 
-    // Triggers an animation event
+    public void ResetDetection()
+    {
+        isPlayerInDetectionZone = false;
+        timeSinceLastSeenPlayer = 0;
+        stateMachine.ChangeState(asleepState);
+    }
+
     public void AnimationEvent(string eventName)
     {
         stateMachine.CurrentState.OnAnimationEvent(eventName);

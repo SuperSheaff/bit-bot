@@ -8,6 +8,11 @@ public class PushingState : PlayerState
     private PushableObject currentPushableObject;
     private bool isSoundPlaying = false;
 
+    private Vector3 forwardRayOrigin1;
+    private Vector3 forwardRayOrigin2;
+    private Vector3 backwardRayOrigin1;
+    private Vector3 backwardRayOrigin2;
+
     public PushingState(PlayerController player) : base(player) { }
 
     public override void Enter()
@@ -44,6 +49,7 @@ public class PushingState : PlayerState
     public override void Exit()
     {
         base.Exit();
+
         player.animator.SetBool("isPushing", false);
         player.SetLastPushTime();
         if (currentPushableObject != null)
@@ -82,12 +88,12 @@ public class PushingState : PlayerState
             // Raycast to check for obstacles in the forward direction
             if (moveDirection.z > 0) // Only check when moving forward
             {
-                canMoveForward = !CheckForObstacle(Vector3.forward);
-                canMoveForward &= CheckForGround(Vector3.forward);
+                canMoveForward = !CheckForObstacle(player.currentPushHandle.transform.forward);
+                canMoveForward &= CheckForGround(player.currentPushHandle.transform.forward);
             }
             else if (moveDirection.z < 0) // Check when moving backward
             {
-                canMoveBackward = CheckForGround(Vector3.back, player.settings.pushDistanceCheck * 1.5f); // Closer distance for backward check
+                canMoveBackward = CheckForGround(-player.currentPushHandle.transform.forward, player.settings.pushDistanceCheck * 1.5f); // Closer distance for backward check
             }
 
             if (canMoveForward && moveDirection.z > 0)
@@ -143,8 +149,8 @@ public class PushingState : PlayerState
             Vector3 desiredDirection = forward * moveDirection.z + right * moveDirection.x;
 
             // Update animation only if allowed to move
-            bool canMoveForward = moveDirection.z > 0 ? !CheckForObstacle(Vector3.forward) && CheckForGround(Vector3.forward) : true;
-            bool canMoveBackward = moveDirection.z < 0 ? CheckForGround(Vector3.back, player.settings.pushDistanceCheck * 1.5f) : true;
+            bool canMoveForward = moveDirection.z > 0 ? !CheckForObstacle(player.currentPushHandle.transform.forward) && CheckForGround(player.currentPushHandle.transform.forward) : true;
+            bool canMoveBackward = moveDirection.z < 0 ? CheckForGround(-player.currentPushHandle.transform.forward, player.settings.pushDistanceCheck * 1.5f) : true;
 
             if (canMoveForward && moveDirection.z > 0)
             {
@@ -173,16 +179,30 @@ public class PushingState : PlayerState
     {
         RaycastHit hit;
         Vector3 rayOrigin = player.currentPushHandle.transform.position;
-        Vector3 rayDirection = player.currentPushHandle.transform.TransformDirection(direction);
+        Vector3 rayDirection = direction;
         return Physics.Raycast(rayOrigin, rayDirection, out hit, player.settings.pushDistanceCheck, player.groundLayer);
     }
 
     private bool CheckForGround(Vector3 direction, float distance = -1)
     {
         RaycastHit hit;
-        Vector3 rayOrigin = player.currentPushHandle.transform.position + direction * (distance > 0 ? distance : player.settings.pushDistanceCheck);
+        Vector3 rayOrigin1 = player.currentPushHandle.transform.position + direction * (distance > 0 ? distance : player.settings.pushDistanceCheck);
+        Vector3 rayOrigin2 = rayOrigin1 + direction * 0.1f;
         Vector3 rayDirection = Vector3.down;
-        return Physics.Raycast(rayOrigin, rayDirection, out hit, player.settings.pushDistanceCheck, player.groundLayer);
+
+        forwardRayOrigin1 = player.currentPushHandle.transform.position + player.currentPushHandle.transform.forward * player.settings.pushDistanceCheck;
+        forwardRayOrigin2 = forwardRayOrigin1 + player.currentPushHandle.transform.forward * 0.1f;
+
+        backwardRayOrigin1 = player.currentPushHandle.transform.position - player.currentPushHandle.transform.forward * player.settings.pushDistanceCheck * 1.5f;
+        backwardRayOrigin2 = backwardRayOrigin1 - player.currentPushHandle.transform.forward * 0.1f;
+
+        // Create a layer mask that excludes the TransparentFX layer (index 1)
+        int layerMask = player.groundLayer & ~(1 << 1);
+
+        bool firstGroundCheck = Physics.Raycast(rayOrigin1, rayDirection, out hit, player.settings.pushDistanceCheck, layerMask);
+        bool secondGroundCheck = Physics.Raycast(rayOrigin2, rayDirection, out hit, player.settings.pushDistanceCheck, layerMask);
+
+        return firstGroundCheck || secondGroundCheck; // Proceed if either ground check is true
     }
 
     private void PlaySlidingSound()

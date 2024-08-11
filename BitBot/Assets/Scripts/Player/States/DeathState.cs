@@ -14,6 +14,8 @@ public class DeathState : PlayerState
         player.StartCoroutine(DissolveEffect()); 
         SoundManager.instance?.PlaySound("BIT_DEATH", player.transform); // Play death sound
         player.animator.enabled = false; // Freeze the animator
+
+        player.IsAlive = false;
     }
 
     private IEnumerator DissolveEffect()
@@ -42,5 +44,7 @@ public class DeathState : PlayerState
         base.Exit();
         player.animator.enabled = true; // Re-enable the animator
         player.meshMaterial.SetFloat("_FadeIn", 1f); // Reset dissolve effect
+
+        player.IsAlive = true;
     }
 }

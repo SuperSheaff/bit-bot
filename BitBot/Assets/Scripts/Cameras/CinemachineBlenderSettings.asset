@@ -46,3 +46,69 @@ MonoBehaviour:
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 4
+  - From: Camera 2.2 (Follow)
+    To: Camera 2.3
+    Blend:
+      Style: 1
+      Time: 4
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 2.3
+    To: Camera 2.2 (Follow)
+    Blend:
+      Style: 1
+      Time: 4
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 2.2 (Follow)
+    To: Camera 3.3
+    Blend:
+      Style: 1
+      Time: 4
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 3.3
+    To: Camera 2.2 (Follow)
+    Blend:
+      Style: 1
+      Time: 4
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 2.2 (Follow)
+    To: Camera 6.1
+    Blend:
+      Style: 1
+      Time: 4
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 6.1
+    To: Camera 2.2 (Follow)
+    Blend:
+      Style: 1
+      Time: 4
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
