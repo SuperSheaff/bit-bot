@@ -9,6 +9,7 @@ public class StarSlot : MonoBehaviour
     public float arcHeight = 5f; // Height of the arc when moving to the slot
     public float moveSpeed = 1f; // Speed of the star moving to the slot
     public FinalDoorController doorController; // Reference to the door controller
+    public Material starLitMaterial; // Reference to the "StarLit" material
 
     private int currentSlotIndex = 0; // The index of the current slot to fill
     private Queue<Transform> collectedStarsQueue = new Queue<Transform>(); // Queue to manage collected stars
@@ -26,7 +27,10 @@ public class StarSlot : MonoBehaviour
         // Ensure lights are off at start
         foreach (Light light in slotLights)
         {
-            light.enabled = false;
+            if (light != null)
+            {
+                light.enabled = false;
+            }
         }
     }
 
@@ -58,11 +62,20 @@ public class StarSlot : MonoBehaviour
             Transform star = collectedStarsQueue.Dequeue();
             Transform targetSlot = slotTransforms[currentSlotIndex];
 
+            if (star == null || targetSlot == null)
+            {
+                Debug.LogWarning("Star or target slot is null, skipping this star.");
+                continue;
+            }
+
             Vector3 startPosition = star.position;
             Vector3 arcPeak = (startPosition + targetSlot.position) / 2 + Vector3.up * arcHeight;
 
             // Play sound when star begins moving
-            SoundManager.instance.PlaySound("STAR_ENTER_SLOT");
+            if (SoundManager.instance != null)
+            {
+                SoundManager.instance.PlaySound("STAR_ENTER_SLOT");
+            }
 
             // Move the star to the slot with an arc
             float elapsedTime = 0;
@@ -78,10 +91,32 @@ public class StarSlot : MonoBehaviour
 
             // Snap to final position and activate the slot
             star.position = targetSlot.position;
-            slotLights[currentSlotIndex].enabled = true;
+
+            // Change the starTransform's material to "StarLit"
+            Renderer starRenderer = targetSlot.GetComponentInChildren<Renderer>();
+            if (starRenderer != null && starLitMaterial != null)
+            {
+                starRenderer.material = starLitMaterial;
+            }
+            else
+            {
+                Debug.LogWarning("Star renderer or star lit material is null, skipping material change.");
+            }
+
+            if (slotLights[currentSlotIndex] != null)
+            {
+                slotLights[currentSlotIndex].enabled = true;
+            }
+            else
+            {
+                Debug.LogWarning("Slot light is null, skipping light activation.");
+            }
 
             // Play sound when star lands in the slot
-            SoundManager.instance.PlaySound("STAR_ACTIVATE");
+            if (SoundManager.instance != null)
+            {
+                SoundManager.instance.PlaySound("STAR_ACTIVATE");
+            }
 
             currentSlotIndex++;
 
@@ -101,6 +136,10 @@ public class StarSlot : MonoBehaviour
             if (doorController != null)
             {
                 doorController.OpenDoor();
+            }
+            else
+            {
+                Debug.LogWarning("Door controller is null, cannot trigger event.");
             }
         }
     }

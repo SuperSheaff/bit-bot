@@ -22,6 +22,8 @@ public class CameraArea : MonoBehaviour
             {
                 cameraController.SetActiveCamera(cameraToActivate, excludeLayers);
             }
+
+            cameraController.ResetCullingMask();
         }
     }
 

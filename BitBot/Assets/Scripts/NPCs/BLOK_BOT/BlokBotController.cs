@@ -21,34 +21,10 @@ public class BlokBotController : MonoBehaviour
     public ParticleSystem alertParticles;
     public PlayerController playerController;
 
-    void Start()
+    void Awake()
     {
-        stateMachine = new StateMachine<BlokBotController>(false);
-
-        asleepState = new BlokBotAsleepState(this);
-        reactionState = new BlokBotReactionState(this);
-        blockingState = new BlokBotBlockingState(this);
-
-        stateMachine.Initialize(asleepState);
-
-        animator = GetComponent<Animator>();
-
-        if (blockingParticles != null)
-        {
-            blockingParticles.Stop();
-        }
-
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
-        {
-            playerTransform = player.transform;
-        }
-        else
-        {
-            Debug.LogError("Player not found in the scene");
-        }
-
-        playerController = player.GetComponent<PlayerController>();
+        InitializeComponents();
+        InitializeStateMachine();
     }
 
     void OnEnable()
@@ -57,7 +33,12 @@ public class BlokBotController : MonoBehaviour
         {
             blockingParticles.Stop();
         }
-        stateMachine.ChangeState(asleepState);
+
+        // Ensure the state machine is not null before changing states
+        if (stateMachine != null)
+        {
+            stateMachine.ChangeState(asleepState);
+        }
     }
 
     void Update()
@@ -68,6 +49,11 @@ public class BlokBotController : MonoBehaviour
     void LateUpdate()
     {
         stateMachine.LateUpdate();
+    }
+
+    void OnDisable()
+    {
+        StopAllSounds();
     }
 
     public void SetPlayerInDetectionZone(bool state)
@@ -92,5 +78,45 @@ public class BlokBotController : MonoBehaviour
     public void AnimationEvent(string eventName)
     {
         stateMachine.CurrentState.OnAnimationEvent(eventName);
+    }
+
+    private void InitializeComponents()
+    {
+        animator = GetComponent<Animator>();
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            playerTransform = player.transform;
+            playerController = player.GetComponent<PlayerController>();
+        }
+        else
+        {
+            Debug.LogError("Player not found in the scene");
+        }
+    }
+
+    private void InitializeStateMachine()
+    {
+        stateMachine = new StateMachine<BlokBotController>(false);
+
+        asleepState = new BlokBotAsleepState(this);
+        reactionState = new BlokBotReactionState(this);
+        blockingState = new BlokBotBlockingState(this);
+
+        stateMachine.Initialize(asleepState);
+    }
+
+    private void StopAllSounds()
+    {
+        if (SoundManager.instance != null)
+        {
+            // Add here all the sound names that should be stopped when the object is disabled
+            SoundManager.instance.StopSound("blok_bot_snore");
+            SoundManager.instance.StopSound("blok_bot_activate");
+            SoundManager.instance.StopSound("blok_bot_laser");
+            SoundManager.instance.StopSound("blok_bot_alert");
+            // Add other sounds related to BlokBot here
+        }
     }
 }

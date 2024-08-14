@@ -8,14 +8,26 @@ public class BlokBotAsleepState : BlokBotState
     public override void Enter()
     {
         base.Enter();
-        blokBot.animator.SetBool("isSleeping", true);
-        blokBot.barrier.SetActive(false);
+
+        if (blokBot.animator != null)
+        {
+            blokBot.animator.SetBool("isSleeping", true);
+        }
+
+        if (blokBot.barrier != null)
+        {
+            blokBot.barrier.SetActive(false);
+        }
 
         if (blokBot.sleepingParticles != null)
         {
             blokBot.sleepingParticles.Play();
         }
-        SoundManager.instance.PlaySound("blok_bot_snore", blokBot.transform);
+
+        if (SoundManager.instance != null)
+        {
+            SoundManager.instance.PlaySound("blok_bot_snore", blokBot.transform);
+        }
     }
 
     public override void Update()
@@ -32,7 +44,10 @@ public class BlokBotAsleepState : BlokBotState
     {
         base.Exit();
         blokBot.animator.SetBool("isSleeping", false);
-        SoundManager.instance.StopSound("blok_bot_snore"); 
+        if (SoundManager.instance != null)
+        {
+            SoundManager.instance.PlaySound("blok_bot_snore", blokBot.transform);
+        }
 
         if (blokBot.sleepingParticles != null)
         {

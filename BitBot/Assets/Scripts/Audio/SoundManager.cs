@@ -57,7 +57,7 @@ public class SoundManager : MonoBehaviour
         Debug.Log("Playing Sound: " + name);
 
         // Stop any existing instance of the sound before playing it again
-        if (gs.source.isPlaying)
+        if (gs.source != null && gs.source.isPlaying)
         {
             gs.source.Stop();
         }
@@ -81,7 +81,10 @@ public class SoundManager : MonoBehaviour
         }
         else
         {
-            gs.source.Play();
+            if (gs.source != null)
+            {
+                gs.source.Play();
+            }
         }
     }
 
@@ -98,22 +101,26 @@ public class SoundManager : MonoBehaviour
 
         // Stop all instances of the sound
         bool soundWasPlaying = false;
-        foreach (AudioSource source in activeSounds[name])
+        for (int i = activeSounds[name].Count - 1; i >= 0; i--)
         {
-            if (source.isPlaying)
+            AudioSource source = activeSounds[name][i];
+            if (source != null && source.isPlaying)
             {
                 source.Stop();
                 soundWasPlaying = true;
-                Debug.Log("Stopped AudioSource playing: " + name);
+                // Debug.Log("Stopped AudioSource playing: " + name);
+            }
+
+            // Remove destroyed or inactive sources from the list
+            if (source == null || !source.isPlaying)
+            {
+                activeSounds[name].RemoveAt(i);
             }
         }
 
-        // Clear the list of stopped sounds
-        activeSounds[name].RemoveAll(source => !source.isPlaying);
-
         if (!soundWasPlaying)
         {
-            Debug.LogWarning("Sound was not playing: " + name);
+            // Debug.LogWarning("Sound was not playing: " + name);
         }
     }
 

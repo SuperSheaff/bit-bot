@@ -10,19 +10,20 @@ public class BitButton : MonoBehaviour
     }
 
     public ButtonType buttonType;
-    public BitLight[] indicatorLights; // Array of custom lights to turn on when the button is pressed
-    public Color buttonPressColor = Color.green; // Color to change the lights to when the button is pressed
-    public string soundName; // Optional sound to play when the button is pressed
-    public LayerMask playerLayer; // Layer to detect the player
-    public BitDoor[] linkedDoors; // Doors that this button is linked to
-    public Transform buttonTransform; // Transform of the button for visual pressing effect
-    public Vector3 pressOffset; // Offset for the button press visual effect
-    public float pressSpeed = 5f; // Speed of the button press animation
+    public BitLight[] indicatorLights;
+    public Color buttonPressColor = Color.green;
+    public string soundName;
+    public LayerMask playerLayer;
+    public BitDoor[] linkedDoors;
+    public Transform buttonTransform;
+    public Vector3 pressOffset;
+    public float pressSpeed = 5f;
 
     public bool isPressed = false;
     private Vector3 initialPosition;
-    private int objectsOnButton = 0; // Counter for objects on the button
+    private int objectsOnButton = 0;
     private bool wasInitializedWithObject = false;
+    private bool shouldCheckInUpdate = false; // Flag to control whether Update should check for objects
 
     public bool IsPressed { get { return isPressed; } }
 
@@ -34,33 +35,50 @@ public class BitButton : MonoBehaviour
     private void OnEnable()
     {
         Debug.Log("BitButton OnEnable: Resetting state");
-        objectsOnButton = 0;
-        wasInitializedWithObject = false;
+        CheckForObjectsOnButton();
+
+        // Set the flag to true if there are objects on the button after OnEnable runs
+        shouldCheckInUpdate = objectsOnButton > 0;
+    }
+
+    private void Update()
+    {
+        if (shouldCheckInUpdate)
+        {
+            CheckForObjectsOnButton();
+        }
+    }
+
+    private void CheckForObjectsOnButton()
+    {
         Collider[] colliders = Physics.OverlapBox(transform.position, transform.localScale / 2, Quaternion.identity, playerLayer);
 
-        // Check if there's already an object on the button
         if (colliders.Length > 0)
         {
             objectsOnButton = colliders.Length;
-            isPressed = true;
-            wasInitializedWithObject = true; // Set flag indicating button was initialized with an object on it
-            SetButtonPressedState(true);
-            buttonTransform.localPosition = initialPosition + pressOffset;
+            wasInitializedWithObject = true;
 
-            // Ensure doors stay open if the button should be pressed
-            foreach (BitDoor door in linkedDoors)
+            if (!isPressed)
             {
-                if (!door.IsOpen)
-                {
-                    door.OnButtonPressed(this);
-                }
+                ActivateButton();
+                PressButton();
             }
         }
         else
         {
-            isPressed = false;
-            buttonTransform.localPosition = initialPosition;
-            SetButtonPressedState(false);
+            if (isPressed)
+            {
+                objectsOnButton = 0;
+                ReleaseButton();
+                if (buttonType == ButtonType.Temporary)
+                {
+                    DeactivateButton();
+                }
+
+                // Disable the flag when there are no objects on the button
+                shouldCheckInUpdate = false;
+            }
+            wasInitializedWithObject = false;
         }
     }
 
@@ -68,9 +86,8 @@ public class BitButton : MonoBehaviour
     {
         if (IsPlayer(other))
         {
-            Debug.Log("BitButton OnTriggerEnter: Player entered");
             objectsOnButton++;
-            if (objectsOnButton == 1 && !wasInitializedWithObject) // Only activate if this is the first object on the button and it wasn't already initialized with an object
+            if (objectsOnButton == 1 && !wasInitializedWithObject)
             {
                 ActivateButton();
             }
@@ -82,15 +99,18 @@ public class BitButton : MonoBehaviour
     {
         if (IsPlayer(other))
         {
-            Debug.Log("BitButton OnTriggerExit: Player exited");
             objectsOnButton--;
-            if (objectsOnButton == 0)
+            if (objectsOnButton <= 0)
             {
+                objectsOnButton = 0;
                 ReleaseButton();
                 if (buttonType == ButtonType.Temporary)
                 {
                     DeactivateButton();
                 }
+
+                // Reset the flag when an object moves off the button
+                shouldCheckInUpdate = false;
             }
         }
     }

@@ -3,17 +3,17 @@ using System.Collections;
 
 public class BitDoor : MonoBehaviour
 {
-    public Vector3 doorOpenOffset; // Offset from the initial position to the open position
-    public float doorOpenSpeed = 2.0f; // Speed of the door opening
-    public AnimationCurve doorOpenCurve; // Timing function for the door movement
-    public string openSoundName; // Optional sound to play when the door opens
-    public string closeSoundName; // Optional sound to play when the door closes
-    public BitButton[] requiredButtons; // Buttons required to open the door
+    public Vector3 doorOpenOffset;
+    public float doorOpenSpeed = 2.0f;
+    public AnimationCurve doorOpenCurve;
+    public string openSoundName;
+    public string closeSoundName;
+    public BitButton[] requiredButtons;
 
-    private Vector3 doorClosedPosition; // Initial position of the door
-    private Vector3 doorOpenPosition; // Final position of the door
+    private Vector3 doorClosedPosition;
+    private Vector3 doorOpenPosition;
     private bool isOpening = false;
-    private bool[] buttonStates; // Track the state of each button
+    private bool[] buttonStates;
 
     public bool IsOpen 
     { 
@@ -32,6 +32,12 @@ public class BitDoor : MonoBehaviour
         doorClosedPosition = transform.position;
         doorOpenPosition = doorClosedPosition + doorOpenOffset;
         buttonStates = new bool[requiredButtons.Length];
+
+        // Initialize button states based on current button states (useful when re-enabling)
+        for (int i = 0; i < requiredButtons.Length; i++)
+        {
+            buttonStates[i] = requiredButtons[i].IsPressed;
+        }
     }
 
     void Update()
