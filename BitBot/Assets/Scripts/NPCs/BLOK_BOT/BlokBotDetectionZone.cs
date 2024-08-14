@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BlokBotDetectZone : MonoBehaviour
 {
-    private BlokBotController blokBotController;
+    public BlokBotController blokBotController;
 
     void Start()
     {
@@ -11,6 +11,17 @@ public class BlokBotDetectZone : MonoBehaviour
         {
             Debug.LogError("BlokBotDetectZone is not a child of BlokBotController");
         }
+    }
+
+    private void OnEnable()
+    {
+        blokBotController = GetComponentInParent<BlokBotController>();
+        if (blokBotController == null)
+        {
+            Debug.LogError("BlokBotDetectZone is not a child of BlokBotController");
+        }
+
+        blokBotController.SetPlayerInDetectionZone(false);
     }
 
     void OnTriggerEnter(Collider other)

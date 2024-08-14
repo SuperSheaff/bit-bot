@@ -9,7 +9,7 @@ public class CameraController : MonoBehaviour
     public static CameraController instance;
 
     public CinemachineCamera defaultCamera; // The default camera to use
-    private CinemachineCamera activeCamera; // The currently active camera
+    public CinemachineCamera activeCamera; // The currently active camera
     public Camera mainCamera; // The main camera
 
     public CinemachineCamera introCamera1; // The camera to use for the intro sequence
@@ -134,7 +134,7 @@ public class CameraController : MonoBehaviour
         activeCamera.Priority = 10; // Higher priority to activate the new camera
 
         // Update the culling mask of the main camera to exclude specified layers
-        mainCamera.cullingMask &= ~excludeLayers.value;
+        // mainCamera.cullingMask &= ~excludeLayers.value;
     }
 
     public void SetActiveCamera(CinemachineCamera camera, LayerMask excludeLayers)
@@ -150,7 +150,7 @@ public class CameraController : MonoBehaviour
             activeCamera.Priority = 10; // Higher priority to activate the new camera
 
             // Update the culling mask of the main camera to exclude specified layers
-            mainCamera.cullingMask &= ~excludeLayers.value;
+            // mainCamera.cullingMask &= ~excludeLayers.value;
         }
     }
 

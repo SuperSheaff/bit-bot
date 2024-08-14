@@ -1,6 +1,7 @@
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using Unity.Cinemachine;
 
 public enum UpgradeType
 {
@@ -18,9 +19,10 @@ public class BitUpgrade : MonoBehaviour
     public LayerMask playerLayer; // Layer to detect the player
     public UpgradeType upgradeType; // The type of upgrade this button provides
 
-    public TMP_Text PressJump;
     public TMP_Text UpgradeTitle; // TextMeshPro object for the upgrade title
+    public TMP_Text UpgradeTitleDupe; // TextMeshPro object for the upgrade title
     public TMP_Text UpgradeDescription; // TextMeshPro object for upgrade instructions
+    public TMP_Text UpgradeDescriptionDupe; // TextMeshPro object for upgrade instructions
     public GameObject upgradeUI; // UI GameObject for displaying the upgrade info
 
     public string titleText; // Title text for the upgrade
@@ -35,14 +37,20 @@ public class BitUpgrade : MonoBehaviour
     public ParticleSystem sparkleParticles; // Sparkle particle system
     public ParticleSystem explosionParticles; // Explosion particle system
 
+    public CinemachineCamera upgradeCamera; // The Cinemachine camera to switch to during the upgrade sequence
+
     private Vector3 startPosition;
     private bool isActivated = false;
-    private Camera mainCamera;
+    private CinemachineCamera previousCamera; // Store the previous camera
+    public Camera mainCamera; // The main camera
+
+    public Transform startTransform; // The start transform for the final slot in
+    public Transform finishTransform; // The finish transform for the final slot in
 
     void Start()
     {
         startPosition = transform.position;
-        mainCamera = Camera.main;
+        previousCamera = CameraController.instance.defaultCamera; // Initialize with default camera
 
         if (explosionParticles != null)
         {
@@ -95,7 +103,7 @@ public class BitUpgrade : MonoBehaviour
 
     private IEnumerator UpgradeSequence()
     {
-        playerController.stateMachine.ChangeState(playerController.pauseState);
+        playerController.stateMachine.ChangeState(playerController.upgradeState);
         SoundManager.instance.PlaySound("BIT_CARTRIDGE", transform);
 
         if (ambientParticles != null)
@@ -136,18 +144,29 @@ public class BitUpgrade : MonoBehaviour
             yield return null;
         }
 
-        // Pause above player
-        float pauseDuration = 0.1f;
-        yield return new WaitForSeconds(pauseDuration);
-
-        // Fly into player's head with ease-in-out
+        // Move to the start position
         elapsed = 0f;
-        Vector3 finalPosition = playerController.transform.position + Vector3.up * 2f;
+        Vector3 startSlotPosition = startTransform.position;
+        Quaternion startSlotRotation = startTransform.rotation;
         while (elapsed < 0.5f)
         {
             elapsed += Time.deltaTime;
             float t = Mathf.SmoothStep(0, 1, elapsed / 0.5f);
-            transform.position = Vector3.Lerp(targetPosition, finalPosition, t);
+            transform.position = Vector3.Lerp(transform.position, startSlotPosition, t);
+            transform.rotation = Quaternion.Slerp(transform.rotation, startSlotRotation, t);
+            yield return null;
+        }
+
+        // Move to the finish position
+        elapsed = 0f;
+        Vector3 finalSlotPosition = finishTransform.position;
+        Quaternion finalSlotRotation = finishTransform.rotation;
+        while (elapsed < 0.5f)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0, 1, elapsed / 0.5f);
+            transform.position = Vector3.Lerp(startSlotPosition, finalSlotPosition, t);
+            transform.rotation = Quaternion.Slerp(startSlotRotation, finalSlotRotation, t);
             yield return null;
         }
 
@@ -162,11 +181,27 @@ public class BitUpgrade : MonoBehaviour
             sparkleParticles.Stop();
         }
 
+        // Switch to the upgrade Cinemachine camera
+        if (upgradeCamera != null)
+        {
+            previousCamera = CameraController.instance.activeCamera; // Store the previous camera
+            CameraController.instance.SetActiveCamera(upgradeCamera, LayerMask.NameToLayer("Nothing"));
+        }
+
+        // Delay slightly before popping up the text
+        yield return new WaitForSeconds(1f); // Adjust delay as needed
         DisplayUpgradeInfo();
+        
         yield return new WaitUntil(() => playerController.inputHandler.JumpPressed);
 
         ApplyUpgrade();
         HideUpgradeInfo();
+
+        // Switch back to the previous camera
+        if (previousCamera != null)
+        {
+            CameraController.instance.SetActiveCamera(previousCamera, LayerMask.NameToLayer("Nothing"));
+        }
 
         yield return new WaitForSeconds(0.5f);
         playerController.stateMachine.ChangeState(playerController.idleState);
@@ -206,10 +241,12 @@ public class BitUpgrade : MonoBehaviour
         if (upgradeUI != null)
         {
             UpgradeTitle.text = titleText;
+            UpgradeTitleDupe.text = titleText;
             UpgradeDescription.text = descriptionText;
+            UpgradeDescriptionDupe.text = descriptionText;
 
+            // Activate the upgrade UI without delay
             upgradeUI.SetActive(true);
-            StartCoroutine(ScaleUI(upgradeUI.transform, Vector3.zero, Vector3.one, 0.5f));
         }
     }
 
@@ -218,24 +255,6 @@ public class BitUpgrade : MonoBehaviour
         if (upgradeUI != null)
         {
             upgradeUI.SetActive(false);
-        }
-    }
-
-    private IEnumerator ScaleUI(Transform uiTransform, Vector3 fromScale, Vector3 toScale, float duration, System.Action onComplete = null)
-    {
-        float elapsed = 0f;
-        while (elapsed < duration)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0, 1, elapsed / duration);
-            uiTransform.localScale = Vector3.Lerp(fromScale, toScale, t);
-            yield return null;
-        }
-        uiTransform.localScale = toScale;
-
-        if (onComplete != null)
-        {
-            onComplete.Invoke();
         }
     }
 }

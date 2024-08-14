@@ -46,7 +46,7 @@ public class BlokBotAsleepState : BlokBotState
         blokBot.animator.SetBool("isSleeping", false);
         if (SoundManager.instance != null)
         {
-            SoundManager.instance.PlaySound("blok_bot_snore", blokBot.transform);
+            SoundManager.instance.StopSound("blok_bot_snore");
         }
 
         if (blokBot.sleepingParticles != null)

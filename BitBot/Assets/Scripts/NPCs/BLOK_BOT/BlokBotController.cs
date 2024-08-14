@@ -37,7 +37,7 @@ public class BlokBotController : MonoBehaviour
         // Ensure the state machine is not null before changing states
         if (stateMachine != null)
         {
-            stateMachine.ChangeState(asleepState);
+            ResetDetection();
         }
     }
 
@@ -58,14 +58,7 @@ public class BlokBotController : MonoBehaviour
 
     public void SetPlayerInDetectionZone(bool state)
     {
-        if (playerController != null && playerController.IsAlive)  // Ensure the player is alive before setting detection state
-        {
-            isPlayerInDetectionZone = state;
-        }
-        else
-        {
-            isPlayerInDetectionZone = false;
-        }
+        isPlayerInDetectionZone = state;
     }
 
     public void ResetDetection()
@@ -84,16 +77,20 @@ public class BlokBotController : MonoBehaviour
     {
         animator = GetComponent<Animator>();
 
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
-        if (player != null)
+        if (playerController == null)
         {
-            playerTransform = player.transform;
-            playerController = player.GetComponent<PlayerController>();
+            GameObject player = GameObject.FindGameObjectWithTag("Player");
+            if (player != null)
+            {
+                playerTransform = player.transform;
+                playerController = player.GetComponent<PlayerController>();
+            }
+            else
+            {
+                Debug.LogError("Player not found in the scene");
+            }
         }
-        else
-        {
-            Debug.LogError("Player not found in the scene");
-        }
+        
     }
 
     private void InitializeStateMachine()

@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     public LedgeGrabState ledgeGrabState;
     public DeathState deathState;
     public RespawnState respawnState;
+    public UpgradeState upgradeState;
 
     #endregion
 
@@ -194,6 +195,7 @@ public class PlayerController : MonoBehaviour
         ledgeGrabState      = new LedgeGrabState(this);
         deathState          = new DeathState(this);
         respawnState        = new RespawnState(this);
+        upgradeState        = new UpgradeState(this);
 
         if(settings.skipIntro)
         {

@@ -165,7 +165,7 @@ public class PushingState : PlayerState
             else
             {
                 player.animator.SetFloat("pushingDirection", 0.0f);
-                player.animator.speed = 0f; // Set animation speed to very low
+                player.animator.speed = 0.01f; // Set animation speed to very low
             }
         }
         else
