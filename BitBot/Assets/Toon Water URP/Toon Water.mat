@@ -12,7 +12,11 @@ Material:
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - BOOLEAN_537AC313_ON
+  - BOOLEAN_765B4C2_ON
+  - BOOLEAN_A060AF44_ON
+  - BOOLEAN_EC1EAD31_ON
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -24,6 +28,14 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - Texture2D_662AC62F:
+        m_Texture: {fileID: 2800000, guid: e0e8561a19db1b841b346944d8b13461, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_CC12F70E:
+        m_Texture: {fileID: 2800000, guid: e1301069de86bdd439c7a3182ed21c3c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -38,17 +50,22 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - BOOLEAN_537AC313: 1
+    - BOOLEAN_765B4C2: 1
+    - BOOLEAN_A060AF44: 1
+    - BOOLEAN_EC1EAD31: 1
     - Boolean_2918AA79: 1
-    - Vector1_20DB7652: 0.2
-    - Vector1_301E02E2: 200
-    - Vector1_31894ABB: 0.006
+    - Vector1_20DB7652: 1.038
+    - Vector1_301E02E2: 0
+    - Vector1_31894ABB: 0.0131
     - Vector1_3632ABA2: 0
     - Vector1_45F25267: 10
     - Vector1_738B39CF: 0
-    - Vector1_854A7D8C: 0.9
+    - Vector1_7AF1AC78: 0.95
+    - Vector1_854A7D8C: 2.04
     - Vector1_9C73072A: 0.8
     - Vector1_A524D234: 2
-    - Vector1_B9CC1720: 0.03
+    - Vector1_B9CC1720: 0.031
     - Vector1_E71BB35E: 1
     - _QueueControl: 0
     - _QueueOffset: 0
@@ -56,7 +73,7 @@ Material:
     - Color_1139F668: {r: 0.21328957, g: 0, b: 0.41509432, a: 0.8156863}
     - Color_198818EE: {r: 0.0021290604, g: 0, b: 0.05660379, a: 0.9647059}
     - Color_626750DD: {r: 2, g: 2, b: 2, a: 1}
-    - Color_77A2EDE9: {r: 32, g: 32, b: 32, a: 1}
+    - Color_77A2EDE9: {r: 57.0379, g: 57.0379, b: 57.0379, a: 1}
     - Vector2_1E1B6943: {r: 1, g: 5, b: 0, a: 0}
     - Vector2_D06E76BC: {r: 0.1, g: 0.05, b: 0, a: 0}
     - Vector2_D26C9C89: {r: 1, g: 0, b: 0, a: 0}

@@ -29,4 +29,4 @@ MonoBehaviour:
   jumpForce: 20
   pushDistanceCheck: 2
   debugMode: 0
-  skipIntro: 0
+  skipIntro: 1

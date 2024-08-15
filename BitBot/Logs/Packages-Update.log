@@ -44,3 +44,22 @@ The following packages were updated:
   com.unity.render-pipelines.universal from version 17.0.1 to 17.0.3
   com.unity.test-framework from version 1.4.2 to 1.4.4
   com.unity.visualscripting from version 1.9.1 to 1.9.4
+
+=== Wed Aug 14 20:35:56 2024
+
+Packages were changed.
+Update Mode: updateDependencies
+
+The following packages were updated:
+  com.unity.render-pipelines.core from version 14.0.7 to 17.0.3
+  com.unity.render-pipelines.universal from version 14.0.7 to 17.0.3
+  com.unity.shadergraph from version 14.0.7 to 17.0.3
+
+=== Wed Aug 14 20:35:56 2024
+
+Packages were changed.
+Update Mode: mergeDefaultDependencies
+
+The following packages were added:
+  com.unity.render-pipelines.core@17.0.3
+  com.unity.shadergraph@17.0.3
