@@ -15,6 +15,10 @@ public class CameraController : MonoBehaviour
     public CinemachineCamera introCamera1; // The camera to use for the intro sequence
     public CinemachineCamera introCamera2; // The camera to use for the intro sequence
     public CinemachineCamera firstAreaCamera; // The camera to use after the intro sequence
+
+    public CinemachineCamera menuCamera; // Camera for the menu
+    private CinemachineCamera previousCamera; // To store the previous camera
+
     public float introPauseBeforeVideo = 2f; // Duration to stay zoomed in
     public float introVideoLength = 2f; // Duration to stay zoomed in
 
@@ -22,6 +26,7 @@ public class CameraController : MonoBehaviour
     private CinemachineBrain cinemachineBrain;
 
     public IntroVideoPlayer introVideoPlayer;
+    public GameObject screenAnimator;
 
     public TMP_Text PressStart;
     public TMP_Text PressKeys;
@@ -79,7 +84,17 @@ public class CameraController : MonoBehaviour
         SetIntroCamera(firstAreaCamera, LayerMask.NameToLayer("Area 0"));
         GameController.instance.player.IsIntroFinished = true;
         introCompleted = true;
+        screenAnimator.SetActive(true);
+        introVideoPlayer.gameObject.SetActive(false);
         GameController.instance.stateMachine.ChangeState(GameController.instance.gamePlayState);
+    }
+
+    public void ReturnToPreviousCamera()
+    {
+        if (previousCamera != null)
+        {
+            SetActiveCamera(previousCamera, LayerMask.NameToLayer("Area 0"));
+        }
     }
 
     public IEnumerator HandleIntroSequence()
@@ -112,6 +127,9 @@ public class CameraController : MonoBehaviour
             Debug.LogError("No first area camera set in CameraController.");
         }
 
+        introVideoPlayer.gameObject.SetActive(false);
+        screenAnimator.SetActive(true);
+
         yield return new WaitForSeconds(5f);
         
         GameController.instance.player.IsIntroFinished = true;
@@ -120,6 +138,7 @@ public class CameraController : MonoBehaviour
         yield return new WaitForSeconds(4f);
         StartCoroutine(FadeInText(PressKeys, 2f));
         yield return new WaitForSeconds(1f);
+
         GameController.instance.stateMachine.ChangeState(GameController.instance.gamePlayState);
     }
 
@@ -130,11 +149,9 @@ public class CameraController : MonoBehaviour
             activeCamera.Priority = 0; // Lower priority to deactivate the current active camera
         }
 
+        previousCamera = activeCamera; // Store the current active camera
         activeCamera = camera;
         activeCamera.Priority = 10; // Higher priority to activate the new camera
-
-        // Update the culling mask of the main camera to exclude specified layers
-        // mainCamera.cullingMask &= ~excludeLayers.value;
     }
 
     public void SetActiveCamera(CinemachineCamera camera, LayerMask excludeLayers)
@@ -143,14 +160,12 @@ public class CameraController : MonoBehaviour
         {
             if (activeCamera != null)
             {
-                activeCamera.Priority = 0; // Lower priority to deactivate the current active camera
+                activeCamera.Priority = 0;
             }
 
+            previousCamera = activeCamera; // Store the current active camera
             activeCamera = camera;
-            activeCamera.Priority = 10; // Higher priority to activate the new camera
-
-            // Update the culling mask of the main camera to exclude specified layers
-            // mainCamera.cullingMask &= ~excludeLayers.value;
+            activeCamera.Priority = 10;
         }
     }
 

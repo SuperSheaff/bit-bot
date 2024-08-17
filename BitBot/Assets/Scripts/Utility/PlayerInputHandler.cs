@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,6 +17,14 @@ public class PlayerInputHandler : MonoBehaviour
     public bool Push            { get; private set; }
     public bool PushPressed     { get; private set; }
     public bool PushReleased    { get; private set; }
+    public bool Pause           { get; private set; }
+    public bool PausePressed    { get; private set; }
+    public bool PauseReleased   { get; private set; }
+    #endregion
+
+    #region References
+
+    // private PauseMenuManager pauseMenuManager;
 
     #endregion
 
@@ -24,6 +33,11 @@ public class PlayerInputHandler : MonoBehaviour
     private void Awake()
     {
         InitializeInput();
+    }
+
+    private void Start()
+    {
+        // pauseMenuManager = FindAnyObjectByType<PauseMenuManager>();
     }
 
     private void OnDestroy()
@@ -57,6 +71,8 @@ public class PlayerInputHandler : MonoBehaviour
 
         playerInput.Player.Push.performed += OnPushPerformed;
         playerInput.Player.Push.canceled += OnPushCanceled;
+        
+        playerInput.Player.Pause.performed += OnPausePerformed;
     }
 
     // Disposes input actions and unsubscribes from events
@@ -73,6 +89,8 @@ public class PlayerInputHandler : MonoBehaviour
 
         playerInput.Player.Push.performed -= OnPushPerformed;
         playerInput.Player.Push.canceled -= OnPushCanceled;
+        
+        playerInput.Player.Pause.performed -= OnPausePerformed;
 
         playerInput.Player.Disable();
     }
@@ -98,6 +116,7 @@ public class PlayerInputHandler : MonoBehaviour
     {
         Jump = true;
         JumpPressed = true;
+        Invoke("ResetFlags", 0.5f);
     }
 
     // Callback for jump input canceled
@@ -126,6 +145,7 @@ public class PlayerInputHandler : MonoBehaviour
     {
         Push = true;
         PushPressed = true;
+        Invoke("ResetFlags", 0.5f);
     }
 
     // Callback for push input canceled
@@ -133,6 +153,20 @@ public class PlayerInputHandler : MonoBehaviour
     {
         Push = false;
         PushReleased = true;
+    }
+    
+     // Callback for Pause input performed
+    private void OnPausePerformed(InputAction.CallbackContext context)
+    {
+        Pause = true;
+        PausePressed = true;
+    }
+
+    // Callback for Pause input canceled
+    private void OnPauseCanceled(InputAction.CallbackContext context)
+    {
+        Pause = false;
+        PauseReleased = true;
     }
 
     #endregion
@@ -142,12 +176,17 @@ public class PlayerInputHandler : MonoBehaviour
     // Resets the flags at the end of each frame
     private void ResetFlags()
     {
+        Jump = false;
         JumpPressed = false;
         JumpReleased = false;
         CrouchPressed = false;
         CrouchReleased = false;
+        Push = false;
         PushPressed = false;
         PushReleased = false;
+        Pause = false;
+        PausePressed = false;
+        PauseReleased = false;
     }
 
     #endregion

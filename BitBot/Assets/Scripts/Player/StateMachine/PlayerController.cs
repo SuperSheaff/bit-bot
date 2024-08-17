@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public DeathState deathState;
     public RespawnState respawnState;
     public UpgradeState upgradeState;
+    public MenuState menuState;
 
     #endregion
 
@@ -34,6 +35,8 @@ public class PlayerController : MonoBehaviour
     public Transform headTransform;
     public Material meshMaterial; // Assign this in the inspector
     public Renderer playerRenderer; // Assign this in the inspector
+    public GameObject pauseMenu; // Assign this in the inspector
+    public GameObject screenAnimator; // Assign this in the inspector
 
 
     #endregion
@@ -114,6 +117,7 @@ public class PlayerController : MonoBehaviour
     {
         HandleJumpBuffer();
         HandleCoyoteTime();
+
         stateMachine.Update();
     }
 
@@ -196,6 +200,7 @@ public class PlayerController : MonoBehaviour
         deathState          = new DeathState(this);
         respawnState        = new RespawnState(this);
         upgradeState        = new UpgradeState(this);
+        menuState           = new MenuState(this);
 
         if(settings.skipIntro)
         {

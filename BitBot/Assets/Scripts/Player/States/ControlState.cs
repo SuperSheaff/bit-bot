@@ -19,6 +19,8 @@ public class ControlState : PlayerState
 
         player.HandleRotation();
         player.HandleGravity();
+
+        HandleEnterMenuState();
     }
 
     // Called every fixed frame to update the state
@@ -31,6 +33,14 @@ public class ControlState : PlayerState
     public override void Exit() 
     {
         base.Exit();
+    }
+
+    private void HandleEnterMenuState()
+    {
+        if (player.inputHandler.Pause && player.stateMachine.CurrentState != player.menuState)
+        {
+            player.stateMachine.ChangeState(player.menuState);
+        }
     }
 
 }

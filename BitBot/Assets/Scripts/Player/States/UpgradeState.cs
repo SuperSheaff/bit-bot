@@ -19,6 +19,7 @@ public class UpgradeState : PlayerState
         Vector3 directionToCamera = player.cameraTransform.position - player.transform.position;
         directionToCamera.y = 0; // Keep only the horizontal direction
         targetRotation = Quaternion.LookRotation(directionToCamera);
+        player.screenAnimator.SetActive(false);
     }
 
     // Called every frame to update the state
@@ -35,5 +36,6 @@ public class UpgradeState : PlayerState
     {
         base.Exit();
         player.animator.SetBool("isUpgrading", false);
+        player.screenAnimator.SetActive(true);
     }
 }
