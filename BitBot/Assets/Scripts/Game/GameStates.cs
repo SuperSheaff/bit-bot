@@ -46,6 +46,7 @@ public class GamePlayState : GameState
     public override void Enter()
     {
         Debug.Log("Game Play State: Enter");
+        gameController.StartTimer();
         // Initialize game play logic here
     }
 

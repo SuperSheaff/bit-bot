@@ -13,13 +13,13 @@ public class FinalDoorController : MonoBehaviour
     private bool isOpening = false;
     private Vector3 closedPosition;
     private Vector3 openPosition;
-    private AudioSource audioSource;
+    // private AudioSource audioSource;
 
     void Start()
     {
         closedPosition = doorTransform.position;
         openPosition = closedPosition + doorOpenOffset;
-        audioSource = GetComponent<AudioSource>();
+        // audioSource = GetComponent<AudioSource>();
     }
 
     public void IncrementSlotsFilled()
@@ -34,7 +34,7 @@ public class FinalDoorController : MonoBehaviour
     public void OpenDoor()
     {
         isOpening = true;
-        audioSource.PlayOneShot(openSound);
+        // audioSource.PlayOneShot(openSound);
         StartCoroutine(OpenDoorCoroutine());
     }
 

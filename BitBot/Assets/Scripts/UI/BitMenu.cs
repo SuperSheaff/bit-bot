@@ -41,6 +41,7 @@ public class BitMenu : MonoBehaviour
                 // Move up the menu
                 currentIndex = (currentIndex > 0) ? currentIndex - 1 : menuItems.Length - 1;
                 lastInputTime = Time.time; // Reset the input timer
+                SoundManager.instance.PlaySound("UI_MOVE", this.transform);
                 UpdateMenuColors();
             }
             else if (inputHandler.Move.y < 0)
@@ -48,6 +49,7 @@ public class BitMenu : MonoBehaviour
                 // Move down the menu
                 currentIndex = (currentIndex < menuItems.Length - 1) ? currentIndex + 1 : 0;
                 lastInputTime = Time.time; // Reset the input timer
+                SoundManager.instance.PlaySound("UI_MOVE", this.transform);
                 UpdateMenuColors();
             }
         }
@@ -56,6 +58,7 @@ public class BitMenu : MonoBehaviour
         if (inputHandler.Jump && Time.time - lastInputTime >= inputDelay)
         {
             ActivateMenuItem();
+            SoundManager.instance.PlaySound("UI_SELECT", this.transform);
             lastInputTime = Time.time; // Reset the input timer after selection
         }
     }

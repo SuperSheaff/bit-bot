@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour
     public DeathState deathState;
     public RespawnState respawnState;
     public UpgradeState upgradeState;
+    public SecretState secretState;
     public MenuState menuState;
 
     #endregion
@@ -36,6 +37,7 @@ public class PlayerController : MonoBehaviour
     public Material meshMaterial; // Assign this in the inspector
     public Renderer playerRenderer; // Assign this in the inspector
     public GameObject pauseMenu; // Assign this in the inspector
+    public GameObject startMenu; // Assign this in the inspector
     public GameObject screenAnimator; // Assign this in the inspector
 
 
@@ -200,11 +202,13 @@ public class PlayerController : MonoBehaviour
         deathState          = new DeathState(this);
         respawnState        = new RespawnState(this);
         upgradeState        = new UpgradeState(this);
+        secretState         = new SecretState(this);
         menuState           = new MenuState(this);
 
         if(settings.skipIntro)
         {
             stateMachine.Initialize(idleState);
+            startMenu.SetActive(false);
         }
         else
         {

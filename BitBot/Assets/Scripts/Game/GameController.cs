@@ -12,6 +12,10 @@ public class GameController : MonoBehaviour
     public GamePauseState gamePauseState;
     public GameEndState gameEndState;
 
+    public float playerTime { get; private set; } // The player's time
+    public int secretScore { get; private set; } // The number of secrets found
+    private bool isTimerRunning = false;
+
     public PlayerController player;
 
     private void Awake()
@@ -56,10 +60,36 @@ public class GameController : MonoBehaviour
     private void Update()
     {
         stateMachine.Update();
+
+        if (isTimerRunning)
+        {
+            playerTime += Time.deltaTime; // Increment the timer by the time elapsed since the last frame
+        }
     }
 
     private void FixedUpdate()
     {
         stateMachine.FixedUpdate();
+    }
+
+    public void StartTimer()
+    {
+        playerTime = 0f; // Reset the timer
+        isTimerRunning = true; // Start the timer
+    }
+
+    public void StopTimer()
+    {
+        isTimerRunning = false; // Stop the timer
+    }
+
+    public void ResetTimer()
+    {
+        playerTime = 0f; // Reset the timer to 0
+    }
+
+    public void AddSecret()
+    {
+        secretScore++; // Increment the secret score
     }
 }

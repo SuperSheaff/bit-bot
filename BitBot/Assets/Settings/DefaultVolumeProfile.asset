@@ -335,7 +335,7 @@ MonoBehaviour:
   active: 1
   distance:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   cropToFit:
     m_OverrideState: 1
     m_Value: 1
@@ -448,7 +448,7 @@ MonoBehaviour:
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 5.4
+    m_Value: 2.8
   intensity:
     m_OverrideState: 1
     m_Value: 12.01
@@ -527,20 +527,20 @@ MonoBehaviour:
     dimension: 1
   rgbStrength:
     m_OverrideState: 1
-    m_Value: 0.25
+    m_Value: 0.12
   scanlineTex:
     m_OverrideState: 1
     m_Value: {fileID: 2800000, guid: 7b5d79ca87223054fa2cb8ee041efb01, type: 3}
     dimension: 1
   scanlineStrength:
     m_OverrideState: 1
-    m_Value: 0.1
+    m_Value: 0.285
   scanlineSize:
     m_OverrideState: 1
-    m_Value: 25
+    m_Value: 5
   scrollSpeed:
     m_OverrideState: 1
-    m_Value: 2.5
+    m_Value: 5
   pixelSize:
     m_OverrideState: 1
     m_Value: 3
@@ -554,8 +554,8 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: 1
   enableInterlacing:
-    m_OverrideState: 1
-    m_Value: 1
+    m_OverrideState: 0
+    m_Value: 0
 --- !u!114 &-581120513425526550
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -655,7 +655,7 @@ MonoBehaviour:
   - {fileID: -6288072647309666549}
   - {fileID: 7518938298396184218}
   - {fileID: -1410297666881709256}
-  - {fileID: -1139837703465297349}
+  - {fileID: 3569079797549915063}
 --- !u!114 &853819529557874667
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -783,7 +783,7 @@ MonoBehaviour:
         - serializedVersion: 3
           time: 0
           value: 0
-          inSlope: 0
+          inSlope: 1
           outSlope: 1
           tangentMode: 0
           weightedMode: 0
@@ -793,7 +793,7 @@ MonoBehaviour:
           time: 1
           value: 1
           inSlope: 1
-          outSlope: 0
+          outSlope: 1
           tangentMode: 0
           weightedMode: 0
           inWeight: 0
@@ -966,6 +966,66 @@ MonoBehaviour:
   contribution:
     m_OverrideState: 1
     m_Value: 0
+--- !u!114 &3569079797549915063
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25792a1c800b6f5498b76a67b3c5b765, type: 3}
+  m_Name: CRTSettings
+  m_EditorClassIdentifier: 
+  active: 1
+  showInSceneView:
+    m_OverrideState: 1
+    m_Value: 1
+  enabled:
+    m_OverrideState: 1
+    m_Value: 1
+  distortionStrength:
+    m_OverrideState: 1
+    m_Value: 0
+  backgroundColor:
+    m_OverrideState: 1
+    m_Value: {r: 0, g: 0, b: 0, a: 1}
+  rgbTex:
+    m_OverrideState: 1
+    m_Value: {fileID: 2800000, guid: 181d47e768319424291cbf45dfce2db1, type: 3}
+    dimension: 1
+  rgbStrength:
+    m_OverrideState: 1
+    m_Value: 0.1
+  scanlineTex:
+    m_OverrideState: 1
+    m_Value: {fileID: 2800000, guid: 7b5d79ca87223054fa2cb8ee041efb01, type: 3}
+    dimension: 1
+  scanlineStrength:
+    m_OverrideState: 1
+    m_Value: 0.15
+  scanlineSize:
+    m_OverrideState: 1
+    m_Value: 5
+  scrollSpeed:
+    m_OverrideState: 1
+    m_Value: 5
+  pixelSize:
+    m_OverrideState: 1
+    m_Value: 3
+  aberrationStrength:
+    m_OverrideState: 1
+    m_Value: 0.2
+  brightness:
+    m_OverrideState: 1
+    m_Value: 1.2
+  contrast:
+    m_OverrideState: 1
+    m_Value: 1.2
+  enableInterlacing:
+    m_OverrideState: 1
+    m_Value: 0
 --- !u!114 &3959858460715838825
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -987,10 +1047,10 @@ MonoBehaviour:
     m_Value: 10
   gaussianEnd:
     m_OverrideState: 1
-    m_Value: 620.93
+    m_Value: 30
   gaussianMaxRadius:
     m_OverrideState: 1
-    m_Value: 0.5
+    m_Value: 1
   highQualitySampling:
     m_OverrideState: 1
     m_Value: 0
@@ -1208,7 +1268,7 @@ MonoBehaviour:
     m_Value: 0
   smoothness:
     m_OverrideState: 1
-    m_Value: 0.01
+    m_Value: 0.2
   rounded:
     m_OverrideState: 1
     m_Value: 0

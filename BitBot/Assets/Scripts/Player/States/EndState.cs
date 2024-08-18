@@ -10,12 +10,17 @@ public class EndState : PlayerState
     public override void Enter() 
     {
         base.Enter();
-        player.animator.SetBool("isIdle", true);
+        player.animator.SetBool("isUpgrading", true);
+        player.screenAnimator.SetActive(false);
     }
 
     // Called every frame to update the state
     public override void Update()
     {
+        if (player.inputHandler.Pause)
+        {
+            Application.Quit();
+        }
     }
 
     // Called every fixed frame to update the state

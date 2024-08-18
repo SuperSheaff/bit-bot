@@ -20,6 +20,7 @@ public class BitButton : MonoBehaviour
     public float pressSpeed = 5f;
 
     public bool isPressed = false;
+    public bool permanentPressed = false;
     private Vector3 initialPosition;
     private int objectsOnButton = 0;
     private bool wasInitializedWithObject = false;
@@ -66,7 +67,7 @@ public class BitButton : MonoBehaviour
         }
         else
         {
-            if (isPressed)
+            if (isPressed && buttonType == ButtonType.Temporary)
             {
                 objectsOnButton = 0;
                 ReleaseButton();
@@ -92,6 +93,11 @@ public class BitButton : MonoBehaviour
                 ActivateButton();
             }
             PressButton();
+
+            if (buttonType == ButtonType.Permanent)
+            {
+                permanentPressed = true;
+            }
         }
     }
 
@@ -100,7 +106,7 @@ public class BitButton : MonoBehaviour
         if (IsPlayer(other))
         {
             objectsOnButton--;
-            if (objectsOnButton <= 0)
+            if (objectsOnButton <= 0 && buttonType == ButtonType.Temporary)
             {
                 objectsOnButton = 0;
                 ReleaseButton();
@@ -188,7 +194,7 @@ public class BitButton : MonoBehaviour
 
     private void PlayButtonSound()
     {
-        if (!string.IsNullOrEmpty(soundName))
+        if (!string.IsNullOrEmpty(soundName) && !permanentPressed)
         {
             SoundManager.instance.PlaySound(soundName, transform);
         }

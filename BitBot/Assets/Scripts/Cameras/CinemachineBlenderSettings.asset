@@ -24,8 +24,8 @@ MonoBehaviour:
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 4
-  - From: Camera Intro 1
-    To: Camera Intro 2
+  - From: StartMenuCam
+    To: Camera Intro 1
     Blend:
       Style: 1
       Time: 5
@@ -35,7 +35,7 @@ MonoBehaviour:
         m_PreInfinity: 0
         m_PostInfinity: 0
         m_RotationOrder: 4
-  - From: Camera Intro 2
+  - From: Camera Intro 1
     To: Camera 0.1
     Blend:
       Style: 1
@@ -61,7 +61,7 @@ MonoBehaviour:
     To: Camera 2.2 (Follow)
     Blend:
       Style: 1
-      Time: 4
+      Time: 1
       CustomCurve:
         serializedVersion: 2
         m_Curve: []
@@ -282,6 +282,72 @@ MonoBehaviour:
     Blend:
       Style: 1
       Time: 0.5
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 2.4
+    To: Camera 2.4.2
+    Blend:
+      Style: 1
+      Time: 1
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 2.4.2
+    To: Camera 2.4
+    Blend:
+      Style: 1
+      Time: 1
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 2.4.2
+    To: Camera 2.4.3
+    Blend:
+      Style: 1
+      Time: 1
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 2.4.3
+    To: Camera 2.4.2
+    Blend:
+      Style: 1
+      Time: 1
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 2.4.3
+    To: Camera 2.5
+    Blend:
+      Style: 1
+      Time: 1
+      CustomCurve:
+        serializedVersion: 2
+        m_Curve: []
+        m_PreInfinity: 0
+        m_PostInfinity: 0
+        m_RotationOrder: 4
+  - From: Camera 2.5
+    To: Camera 2.4.3
+    Blend:
+      Style: 1
+      Time: 1
       CustomCurve:
         serializedVersion: 2
         m_Curve: []

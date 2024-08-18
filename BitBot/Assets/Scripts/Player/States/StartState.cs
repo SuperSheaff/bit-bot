@@ -11,6 +11,7 @@ public class StartState : PlayerState
     {
         base.Enter();
 
+        player.startMenu.SetActive(true);
         player.animator.SetBool("isStart", true);
     }
 
@@ -18,12 +19,6 @@ public class StartState : PlayerState
     public override void Update()
     {
 
-        if (player.inputHandler.Jump)
-        {
-            player.stateMachine.ChangeState(player.standState);
-            GameController.instance.stateMachine.ChangeState(GameController.instance.gameIntroState);
-            // GameTimer.instance.StartTimer();
-        }
     }
 
     // Called every fixed frame to update the state
@@ -38,5 +33,6 @@ public class StartState : PlayerState
         base.Exit();
 
         player.animator.SetBool("isStart", false);
+        player.startMenu.SetActive(false);
     }
 }

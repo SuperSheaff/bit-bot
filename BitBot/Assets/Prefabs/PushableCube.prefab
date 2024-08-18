@@ -448,6 +448,7 @@ MonoBehaviour:
   pushableObject: {fileID: 1981725702599044046}
   pushDirection: {x: 0, y: 0, z: 1}
   playerLockPosition: {fileID: 4209448091533348344}
+  interactTextPrefab: {fileID: 6920836452042278376, guid: caeddb4afde40c34e910696b56e31cbe, type: 3}
 --- !u!65 &7517081475785239291
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -580,6 +581,7 @@ MonoBehaviour:
   pushableObject: {fileID: 1981725702599044046}
   pushDirection: {x: 0, y: 0, z: 1}
   playerLockPosition: {fileID: 8946393993518506626}
+  interactTextPrefab: {fileID: 6920836452042278376, guid: caeddb4afde40c34e910696b56e31cbe, type: 3}
 --- !u!65 &880014651455453209
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -681,6 +683,7 @@ MonoBehaviour:
   pushableObject: {fileID: 1981725702599044046}
   pushDirection: {x: 0, y: 0, z: 1}
   playerLockPosition: {fileID: 4330350028892400253}
+  interactTextPrefab: {fileID: 6920836452042278376, guid: caeddb4afde40c34e910696b56e31cbe, type: 3}
 --- !u!65 &7485125762720066915
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -782,6 +785,7 @@ MonoBehaviour:
   pushableObject: {fileID: 1981725702599044046}
   pushDirection: {x: 0, y: 0, z: 1}
   playerLockPosition: {fileID: 5880801627738694548}
+  interactTextPrefab: {fileID: 6920836452042278376, guid: caeddb4afde40c34e910696b56e31cbe, type: 3}
 --- !u!65 &5320612736886567402
 BoxCollider:
   m_ObjectHideFlags: 0

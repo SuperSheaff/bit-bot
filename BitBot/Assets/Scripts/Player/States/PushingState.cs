@@ -136,44 +136,30 @@ public class PushingState : PlayerState
         Vector2 moveInput = player.inputHandler.Move;
         if (moveInput != Vector2.zero)
         {
-            Vector3 moveDirection = new Vector3(moveInput.x, 0, moveInput.y).normalized;
+            // Calculate the local movement direction relative to the push handle
+            Vector3 localMoveDirection = player.currentPushHandle.transform.InverseTransformDirection(new Vector3(moveInput.x, 0, moveInput.y));
 
-            // Calculate desired movement direction based on camera's perspective
-            Vector3 forward = player.cameraTransform.forward;
-            Vector3 right = player.cameraTransform.right;
-            forward.y = 0;
-            right.y = 0;
-            forward.Normalize();
-            right.Normalize();
+            // Determine if the player is pushing or pulling based on the local z-axis
+            bool isPushing = localMoveDirection.z > 0;
 
-            Vector3 desiredDirection = forward * moveDirection.z + right * moveDirection.x;
-
-            // Update animation only if allowed to move
-            bool canMoveForward = moveDirection.z > 0 ? !CheckForObstacle(player.currentPushHandle.transform.forward) && CheckForGround(player.currentPushHandle.transform.forward) : true;
-            bool canMoveBackward = moveDirection.z < 0 ? CheckForGround(-player.currentPushHandle.transform.forward, player.settings.pushDistanceCheck * 1.5f) : true;
-
-            if (canMoveForward && moveDirection.z > 0)
+            if (isPushing)
             {
-                player.animator.SetFloat("pushingDirection", 1f);
-                player.animator.speed = 1f; // Set animation speed to normal
-            }
-            else if (canMoveBackward && moveDirection.z < 0)
-            {
-                player.animator.SetFloat("pushingDirection", -1f);
-                player.animator.speed = 1f; // Set animation speed to normal
+                player.animator.SetFloat("pushingDirection", 1f); // Push forward animation
             }
             else
             {
-                player.animator.SetFloat("pushingDirection", 0.0f);
-                player.animator.speed = 0.01f; // Set animation speed to very low
+                player.animator.SetFloat("pushingDirection", -1f); // Pull backward animation
             }
+
+            player.animator.speed = 1f; // Set animation speed to normal
         }
         else
         {
-            player.animator.SetFloat("pushingDirection", 0.6f);
+            player.animator.SetFloat("pushingDirection", 0.6f); // Slight idle movement
             player.animator.speed = 0.1f; // Set animation speed to very low
         }
     }
+
 
     private bool CheckForObstacle(Vector3 direction)
     {
